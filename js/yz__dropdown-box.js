@@ -87,21 +87,27 @@ function removeNotification(){
 }
 
 function dropdownBox(nodeList, item, countRow){
-    removeNotification();
+    if(item.className.indexOf('service__item_active') > -1){
+        removeNotification();
 
-    if(document.querySelector('.service__item.service__item_active')){
-        document.querySelector('.service__item.service__item_active').classList.remove('service__item_active');
-    }
+        item.classList.remove('service__item_active');
+    }else{
+        removeNotification();
 
-    item.classList.add('service__item_active');
+        if(document.querySelector('.service__item.service__item_active')){
+            document.querySelector('.service__item.service__item_active').classList.remove('service__item_active');
+        }
 
-    var itemPosition = getElemPosition(nodeList, item),
+        item.classList.add('service__item_active');
+
+        var itemPosition = getElemPosition(nodeList, item),
         notificationPosition = getNotificationPosition(itemPosition, countRow, ya_dropdown.countList),
         notification = renderNotification(item.querySelector('.service__info').innerHTML),
         parentList = nodeList[0].offsetParent;
 
-    // Добавить до - соседнего справа элемента, если соседа справа нет - добавить в конец
-    parentList.insertBefore(notification, nodeList.item(notificationPosition).nextElementSibling);
+        // Добавить до - соседнего справа элемента, если соседа справа нет - добавить в конец
+        parentList.insertBefore(notification, nodeList.item(notificationPosition).nextElementSibling);
+    }
 }
 
 var ya_dropdown = {};
@@ -113,6 +119,7 @@ ya_dropdown.listItems.forEach(function(item, index){
     item.addEventListener('click', function(e){
         dropdownBox(ya_dropdown.listItems, item, getCoutInRow(window.innerWidth));
     });
+
 });
 
 throttle(window.addEventListener('resize', function(e){
@@ -123,9 +130,13 @@ throttle(window.addEventListener('resize', function(e){
             document.querySelector('.service__item.service__item_active').classList.remove('service__item_active');
         }
 
-        listItems.forEach(function(item, index){
+        ya_dropdown.listItems.forEach(function(item, index){
             item.addEventListener('click', function(e){
                 dropdownBox(item, getCoutInRow(window.innerWidth));
+
+                item.addEventListener('click', function(e){
+                    removeNotification();
+                });
             });
         });
 
