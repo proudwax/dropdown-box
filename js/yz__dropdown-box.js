@@ -87,6 +87,7 @@ function removeNotification(){
 }
 
 function dropdownBox(nodeList, item, countRow){
+    console.log(item);
     if(item.className.indexOf('service__item_active') > -1){
         removeNotification();
 
@@ -119,10 +120,9 @@ ya_dropdown.listItems.forEach(function(item, index){
     item.addEventListener('click', function(e){
         dropdownBox(ya_dropdown.listItems, item, getCoutInRow(window.innerWidth));
     });
-
 });
 
-throttle(window.addEventListener('resize', function(e){
+throttle(window.addEventListener('resize load', function(e){
     if(ya_dropdown.windowWidth != window.innerWidth){
         removeNotification();
 
@@ -131,12 +131,11 @@ throttle(window.addEventListener('resize', function(e){
         }
 
         ya_dropdown.listItems.forEach(function(item, index){
+            item.removeEventListener('click', function(e){
+                dropdownBox(ya_dropdown.listItems, item, getCoutInRow(window.innerWidth));
+            });
             item.addEventListener('click', function(e){
-                dropdownBox(item, getCoutInRow(window.innerWidth));
-
-                item.addEventListener('click', function(e){
-                    removeNotification();
-                });
+                dropdownBox(ya_dropdown.listItems, item, getCoutInRow(window.innerWidth));
             });
         });
 
