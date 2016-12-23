@@ -87,7 +87,6 @@ function removeNotification(){
 }
 
 function dropdownBox(nodeList, item, countRow){
-    console.log(item);
     if(item.className.indexOf('service__item_active') > -1){
         removeNotification();
 
