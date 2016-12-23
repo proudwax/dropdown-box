@@ -43,6 +43,7 @@ function getElemPosition(nodeList, elemList){
 }
 
 function getNotificationPosition(elemPosition, elemsInRow, countNodeList){
+        // выводить notification нужно после последнего эле-та в строке.
     var param = (elemPosition % elemsInRow) ? (elemPosition % elemsInRow) : elemsInRow;
     var notPosition = elemPosition + (elemsInRow - param) - 1;
 
@@ -85,7 +86,7 @@ function removeNotification(){
     }
 }
 
-function dropdownBox(item, countRow){
+function dropdownBox(nodeList, item, countRow){
     removeNotification();
 
     if(document.querySelector('.service__item.service__item_active')){
@@ -94,34 +95,40 @@ function dropdownBox(item, countRow){
 
     item.classList.add('service__item_active');
 
-    var itemPosition = getElemPosition(listItems, item),
-        notificationPosition = getNotificationPosition(itemPosition, countRow, countList),
+    var itemPosition = getElemPosition(nodeList, item),
+        notificationPosition = getNotificationPosition(itemPosition, countRow, ya_dropdown.countList),
         notification = renderNotification(item.querySelector('.service__info').innerHTML),
-        parentList = listItems[0].offsetParent;
+        parentList = nodeList[0].offsetParent;
 
     // Добавить до - соседнего справа элемента, если соседа справа нет - добавить в конец
-    parentList.insertBefore(notification, listItems.item(notificationPosition).nextElementSibling);
+    parentList.insertBefore(notification, nodeList.item(notificationPosition).nextElementSibling);
 }
 
-var listItems = document.querySelectorAll('.service__item');
-var countList = listItems.length;
+var ya_dropdown = {};
+    ya_dropdown.listItems = document.querySelectorAll('.service__item');
+    ya_dropdown.countList = ya_dropdown.listItems.length;
+    ya_dropdown.windowWidth = window.innerWidth;
 
-listItems.forEach(function(item, index){
+ya_dropdown.listItems.forEach(function(item, index){
     item.addEventListener('click', function(e){
-        dropdownBox(item, getCoutInRow(window.innerWidth));
+        dropdownBox(ya_dropdown.listItems, item, getCoutInRow(window.innerWidth));
     });
 });
 
 throttle(window.addEventListener('resize', function(e){
-    removeNotification();
+    if(ya_dropdown.windowWidth != window.innerWidth){
+        removeNotification();
 
-    if(document.querySelector('.service__item.service__item_active')){
-        document.querySelector('.service__item.service__item_active').classList.remove('service__item_active');
-    }
+        if(document.querySelector('.service__item.service__item_active')){
+            document.querySelector('.service__item.service__item_active').classList.remove('service__item_active');
+        }
 
-    listItems.forEach(function(item, index){
-        item.addEventListener('click', function(e){
-            dropdownBox(item, getCoutInRow(window.innerWidth));
+        listItems.forEach(function(item, index){
+            item.addEventListener('click', function(e){
+                dropdownBox(item, getCoutInRow(window.innerWidth));
+            });
         });
-    });
+
+        ya_dropdown.windowWidth = window.innerWidth;
+    }
 }), 300);
